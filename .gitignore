@@ -1,0 +1,54 @@
+# Pacharm settings
+.idea/
+build
+
+# Venv
+venv/
+
+# Dataset
+datasets/
+
+# Python chache
+__pycache__/
+.ipynb_checkpoints
+.cache
+
+# Logs folders
+logs
+lightning_logs*
+tmp
+mlruns
+
+# Audio and video
+*.avi
+*.mp4
+
+# Images
+*.jpg
+*.bmp
+*.png
+*.svg
+*.depth
+*.reg
+
+# Features
+*.desc
+*.kpt
+*.mathces
+*.overlapping
+
+# Archives
+*.tgz
+*.zip
+*.rar
+*.gz
+*.npz
+*.txt
+*.db
+
+# Python models
+*.npy
+*.pkl
+*.pt
+*.pth
+*.ckpt

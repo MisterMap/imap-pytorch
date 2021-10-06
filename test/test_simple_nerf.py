@@ -8,7 +8,7 @@ from pytorch_lightning.loggers import TensorBoardLogger
 
 
 # noinspection PyTypeChecker,PyUnresolvedReferences
-class TestSevenScenesDataModule(unittest.TestCase):
+class TestNERF(unittest.TestCase):
     def setUp(self) -> None:
         depth_image_path = "/media/mikhail/Data3T/7scenes/chess/seq-01/frame-000001.depth.png"
         color_image_path = "/media/mikhail/Data3T/7scenes/chess/seq-01/frame-000001.color.png"
@@ -17,9 +17,11 @@ class TestSevenScenesDataModule(unittest.TestCase):
             name="NERF",
             optimizer=AttributeDict(),
             encoding_dimension=93,
-            sample_bins=32,
+            course_sample_bins=32,
+            fine_sample_bins=12,
             maximal_distance=4,
-            depth_loss_koef=0.5
+            depth_loss_koef=0.5,
+            encoding_sigma=25,
         )
         self._trainer = pl.Trainer(logger=TensorBoardLogger("lightning_logs"), max_epochs=1, gpus=1,
                                    limit_train_batches=1, limit_val_batches=1, limit_test_batches=1)

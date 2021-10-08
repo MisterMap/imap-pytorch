@@ -1,18 +1,19 @@
 import unittest
-from imap.data.pixel_data_module import PixelDataModule
+from imap.data.image_rendering_data_module import ImageRenderingDataModule
 import torch
 
 
 # noinspection PyTypeChecker,PyUnresolvedReferences
 class TestSevenScenesDataModule(unittest.TestCase):
     def setUp(self) -> None:
-        depth_image_path = "/media/mikhail/Data3T/7scenes/chess/seq-01/frame-000001.depth.png"
-        color_image_path = "/media/mikhail/Data3T/7scenes/chess/seq-01/frame-000001.color.png"
-        self._data_module = PixelDataModule(color_image_path, depth_image_path)
+        scene = "fire"
+        sequence = "seq-01"
+        dataset_path = "/media/mikhail/Data3T/7scenes"
+        frame_indices = [1, 2]
+        self._data_module = ImageRenderingDataModule(dataset_path, scene, sequence, frame_indices)
 
     def test_load(self):
-        self.assertEqual(len(self._data_module._train_dataset), 301056)
-        self.assertEqual(len(self._data_module._test_dataset), 6144)
+        self.assertEqual(len(self._data_module._dataset), 614400)
         batches = self._data_module.train_dataloader()
         for batch in batches:
             self.assertEqual(batch["pixel"].shape, torch.Size([4096, 2]))

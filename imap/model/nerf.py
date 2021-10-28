@@ -4,7 +4,7 @@ import torch.nn as nn
 from .base_lightning_model import BaseLightningModule
 from .mlp import MLP
 from .gaussian_positional_encoding import GaussianPositionalEncoding
-from ..utils.torch_math import back_project_pixel
+from ..utils.torch_math import back_project_pixel, matrix_from_9d_position, position_9d_from_matrix
 
 
 class NERF(BaseLightningModule):
@@ -138,11 +138,12 @@ class NERF(BaseLightningModule):
     def loss(self, batch):
         camera_position = self.positions_from_batch(batch)
         output = self.forward(batch["pixel"], camera_position)
+        mask = (batch["depth"] > 0.1) & (batch["depth"] < 3.9)
         course_image_loss = self._loss(output[0], batch["color"])
-        course_depth_weights = 1. / (torch.sqrt(output[4]) + 1e-5)
+        course_depth_weights = 1. / (torch.sqrt(output[4]) + 1e-5) * mask
         course_depth_loss = self._loss(output[1] * course_depth_weights, batch["depth"] * course_depth_weights)
         fine_image_loss = self._loss(output[2], batch["color"])
-        fine_depth_weights = 1. / (torch.sqrt(output[5]) + 1e-5)
+        fine_depth_weights = 1. / (torch.sqrt(output[5]) + 1e-5) * mask
         fine_depth_loss = self._loss(output[3] * fine_depth_weights, batch["depth"] * fine_depth_weights)
         image_loss = course_image_loss + fine_image_loss
         depth_loss = course_depth_loss + fine_depth_loss
@@ -159,13 +160,24 @@ class NERF(BaseLightningModule):
     def positions_from_batch(self, batch):
         if "camera_position" in batch.keys():
             return batch["camera_position"]
-        indexes = batch["model_index"]
-        return self._positions[indexes]
+        indexes = batch["frame_index"]
+        return matrix_from_9d_position(self._positions[indexes])
 
-    def add_tracked_position(self, position):
-        previous_positions = self._positions.data
-        new_positions = torch.cat([previous_positions, torch.tensor(position)], dim=0)
-        self._positions = nn.Parameter(new_positions, requires_grad=self.hparams.optimize_positions)
+    def set_positions(self, position):
+        device = self._positions.data.device
+        positions_requires_grad = self._positions.requires_grad
+        position = position_9d_from_matrix(torch.tensor(position, device=device))
+        self._positions = nn.Parameter(position, requires_grad=positions_requires_grad)
 
-    def last_position(self):
-        return self._positions[-1]
+    def get_positions(self):
+        return matrix_from_9d_position(self._positions).detach().cpu().numpy()
+
+    def freeze_positions(self):
+        self._positions.requires_grad = False
+
+    def unfreeze_positions(self):
+        self._positions.requires_grad = True
+
+    def freeze_model(self):
+        self._mlp.requires_grad_(False)
+        self._positional_encoding.requires_grad_(False)

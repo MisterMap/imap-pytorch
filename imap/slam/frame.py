@@ -1,8 +1,6 @@
 class Frame(object):
-    def __init__(self, image, depth, index, position=None):
+    def __init__(self, image, depth, ground_truth_position, index):
         self.image = image
         self.depth = depth
-        self.index = index
-        self.position = position
-        self.model_index = 0
-        self.region_sample_weights = None
+        self.id = index
+        self.ground_truth_position = ground_truth_position

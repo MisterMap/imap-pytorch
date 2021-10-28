@@ -25,9 +25,9 @@ class IMAPSLAM(object):
             self.init_map_builder(current_frame)
             return
         with self._tracker_mutex:
-            self._tracker.track_current_frame(current_frame)
+            tracked_position = self._tracker.track_current_frame(current_frame)
         with self._map_builder_mutex:
-            self._map_builder.add_current_frame(current_frame)
+            self._map_builder.add_current_frame(current_frame, tracked_position)
 
     def init_map_builder(self, first_frame):
         self._map_builder.init(first_frame)

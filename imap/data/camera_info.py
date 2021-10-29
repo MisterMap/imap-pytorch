@@ -1,11 +1,13 @@
 import numpy as np
 
+DEFAULT_CAMERA_MATRIX = np.array([[525., 0, 320],
+                                 [0, 525., 240],
+                                 [0, 0, 1.]], dtype=np.float32)
+
 
 class CameraInfo(object):
-    def __init__(self, clip_depth_distance_threshold):
-        camera_matrix = np.array([[525., 0, 320],
-                                     [0, 525., 240],
-                                     [0, 0, 1.]], dtype=np.float32)
+    def __init__(self, clip_depth_distance_threshold, camera_matrix=DEFAULT_CAMERA_MATRIX):
+
         self._inverted_camera_matrix = np.linalg.inv(camera_matrix)
         self._clip_depth_distance_threshold = clip_depth_distance_threshold
         self._color_mean = np.ones(3) * 127.
@@ -16,6 +18,9 @@ class CameraInfo(object):
         return np.clip(depth_image, 0, self._clip_depth_distance_threshold)
 
     def convert_depths(self, depth_image):
+        """
+        Convert depth to 3D points
+        """
         y, x = np.meshgrid(range(depth_image.shape[1]), range(depth_image.shape[2]))
         y = y.reshape(-1)
         x = y.reshape(-1)

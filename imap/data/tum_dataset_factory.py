@@ -14,8 +14,8 @@ DEFAULT_CAMERA_MATRIX = np.array([[517.3, 0, 318.6],
 
 class TUMDatasetFactory(object):
     @staticmethod
-    def make_dataset(dataset_path, dataset_name, association_file_name, frame_indices):
-        sequence_directory = Path(dataset_path) / dataset_name
+    def make_dataset(dataset_path, scene_name, association_file_name, frame_indices):
+        sequence_directory = Path(dataset_path) / scene_name
 
         association_file = sequence_directory / association_file_name
         print("reading file: ", association_file)

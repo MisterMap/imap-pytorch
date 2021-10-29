@@ -1,7 +1,6 @@
-import numpy as np
 import cv2
+import numpy as np
 from scipy.spatial.transform import Rotation
-import quaternion
 
 
 def quaternion_angular_error(q1, q2):
@@ -67,4 +66,3 @@ def pnp_position(keypoints3d, keypoints, camera_matrix, dist_coef, flags=cv2.SOL
     recovered_camera_position[:3, 3] = translation
     recovered_camera_position[3, 3] = 1
     return recovered_camera_position
-

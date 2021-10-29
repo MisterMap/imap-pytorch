@@ -1,5 +1,5 @@
-import torch.nn as nn
 import torch
+import torch.nn as nn
 
 
 class MLP(nn.Module):
@@ -22,4 +22,3 @@ class MLP(nn.Module):
         before_last_layer = self.first_layer(x)
         x = torch.cat([before_last_layer, x], dim=1)
         return self.last_layers(x)
-

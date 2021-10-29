@@ -26,3 +26,5 @@ class SevenScenesFrameLoader(object):
                      self._positions[index],
                      self._frame_indices[index])
 
+    def __len__(self):
+        return len(self._color_images)

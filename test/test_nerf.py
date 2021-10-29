@@ -1,10 +1,12 @@
 import unittest
+
+import pytorch_lightning as pl
+from pytorch_lightning.loggers import TensorBoardLogger
+from pytorch_lightning.utilities.parsing import AttributeDict
+
 from imap.data.image_rendering_data_module import ImageRenderingDataModule
 from imap.model.nerf import NERF
 from imap.utils import UniversalFactory
-from pytorch_lightning.utilities.parsing import AttributeDict
-import pytorch_lightning as pl
-from pytorch_lightning.loggers import TensorBoardLogger
 
 
 # noinspection PyTypeChecker,PyUnresolvedReferences

@@ -22,4 +22,5 @@ class IMAPTracker(object):
         self._model.set_positions([self._initial_position])
         self._tracker_data_loader.update_frames([frame])
         self._trainer.fit(self._model, self._tracker_data_loader)
-        return self._model.get_positions()[0]
+        self._initial_position = self._model.get_positions()[0]
+        return self._initial_position

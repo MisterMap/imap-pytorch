@@ -2,21 +2,26 @@ import numpy as np
 import torch
 
 
-class TrackerDataLoader(object):
-    def __init__(self, batch_count, batch_size, camera_info):
+class IMAPDataLoader(object):
+    def __init__(self, batch_count, points_per_image, camera_info):
         self._batch_count = batch_count
-        self._batch_size = batch_size
+        self._points_per_image = points_per_image
         self._depth_images = []
         self._color_images = []
         self._camera_info = camera_info
+        self._index = 0
 
     def __len__(self):
         return self._batch_count
 
     def __iter__(self):
+        self._index = 0
         return self
 
     def __next__(self):
+        if self._index == self._batch_count:
+            raise StopIteration
+        self._index += 1
         return self._prepare_batch()
 
     def _prepare_batch(self):
@@ -35,8 +40,8 @@ class TrackerDataLoader(object):
         }
 
     def sample_pixels(self, image_shape):
-        x = np.random.randint(image_shape[1], size=self._batch_size)
-        y = np.random.randint(image_shape[0], size=self._batch_size)
+        x = np.random.randint(image_shape[1], size=self._points_per_image)
+        y = np.random.randint(image_shape[0], size=self._points_per_image)
         return x, y
 
     @staticmethod

@@ -1,19 +1,19 @@
 import unittest
 
 import numpy as np
-import pytorch_lightning as pl
 from pytorch_lightning.utilities.parsing import AttributeDict
 
 from imap.data.camera_info import CameraInfo
 from imap.data.seven_scenes_frame_loader import SevenScenesFrameLoader
 from imap.model.nerf import NERF
+from imap.slam.active_sampler import ActiveSampler
 from imap.slam.imap_data_loader import IMAPDataLoader
-from imap.slam.imap_tracker import IMAPTracker
+from imap.slam.posed_frame import PosedFrame
 from imap.utils import UniversalFactory
 
 
 # noinspection PyTypeChecker,PyUnresolvedReferences
-class TestIMAPTracker(unittest.TestCase):
+class TestSampler(unittest.TestCase):
     def setUp(self) -> None:
         scene = "fire"
         sequence = "seq-01"
@@ -32,13 +32,12 @@ class TestIMAPTracker(unittest.TestCase):
         factory = UniversalFactory([NERF])
         camera_info = CameraInfo(4.)
         self._model = factory.make_from_parameters(parameters, camera_info=camera_info)
-        trainer = pl.Trainer(max_epochs=1, gpus=1)
-        tracker_data_loader = IMAPDataLoader(2, 10, camera_info)
-        self._tracker = IMAPTracker(trainer, tracker_data_loader)
-        self._tracker.update_model(self._model)
+        data_loader = IMAPDataLoader(2, 10, camera_info)
         initial_position = np.eye(4)
-        self._tracker.set_initial_position(initial_position)
-        self._frame = SevenScenesFrameLoader(dataset_path, scene, sequence, [2])[0]
+        self._frames = [PosedFrame(x, initial_position) for x in SevenScenesFrameLoader(
+            dataset_path, scene, sequence, [0, 1, 2, 3, 4, 5])]
+        self._active_sampler = ActiveSampler(data_loader, 3, 1)
 
-    def test_tracker_step(self):
-        self._tracker.track(self._frame)
+    def test_sample_keyframes(self):
+        active_keyframes = self._active_sampler.sample_keyframes(self._frames, self._model)
+        self.assertEqual(len(active_keyframes), 4)

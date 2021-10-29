@@ -1,6 +1,8 @@
 import unittest
-from imap.data.image_rendering_data_module import ImageRenderingDataModule
+
 import torch
+
+from imap.data.image_rendering_data_module import ImageRenderingDataModule
 
 
 # noinspection PyTypeChecker,PyUnresolvedReferences

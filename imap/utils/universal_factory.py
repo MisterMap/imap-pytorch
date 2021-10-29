@@ -1,4 +1,5 @@
 from inspect import signature
+
 from pytorch_lightning.utilities.parsing import AttributeDict
 
 PARAMETER_ATTRIBUTE_NAMES = ["parameters", "params", "param", "parameter"]

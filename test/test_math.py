@@ -1,11 +1,10 @@
 import unittest
 
-import torch
-
-from imap.utils.torch_math import *
-from imap.utils.math import *
 import numpy as np
 from scipy.spatial.transform import Rotation
+
+from imap.utils.math import *
+from imap.utils.torch_math import *
 
 
 class TestMath(unittest.TestCase):
@@ -16,9 +15,7 @@ class TestMath(unittest.TestCase):
         matrix_position = np.eye(4)
         matrix_position[:3, 3] = translation
         matrix_position[:3, :3] = Rotation.from_euler("xyz", rotation).as_matrix()
-        camera_matrix = np.array([[525., 0, 320],
-                                  [0, 525., 240],
-                                  [0, 0, 1.]])
+        camera_matrix = np.array([[525., 0, 320], [0, 525., 240], [0, 0, 1.]])
 
         invert_position = invert_positions(matrix_position[None])[0]
         local_point3d = invert_position[:3, :3] @ points3d.T + invert_position[:3, 3:4]
@@ -33,4 +30,3 @@ class TestMath(unittest.TestCase):
         reconstructed_points3d = back_project_pixel(pixel, depth, camera_position, inverted_camera_matrix)
         reconstructed_points3d = reconstructed_points3d.detach().cpu().numpy()
         self.assertAlmostEqual(np.linalg.norm(reconstructed_points3d - points3d), 0)
-

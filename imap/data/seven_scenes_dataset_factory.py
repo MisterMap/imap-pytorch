@@ -1,8 +1,10 @@
-from .image_rendering_dataset import ImageRenderingDataset
-from .camera_info import CameraInfo
 import os
-import numpy as np
+
 import cv2
+import numpy as np
+
+from .camera_info import CameraInfo
+from .image_rendering_dataset import ImageRenderingDataset
 
 
 class SevenScenesDatasetFactory(object):

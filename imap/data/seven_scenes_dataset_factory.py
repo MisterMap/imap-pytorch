@@ -1,14 +1,16 @@
-from .image_rendering_dataset import ImageRenderingDataset
-from .camera_info import CameraInfo
 import os
-import numpy as np
+
 import cv2
+import numpy as np
+
+from .camera_info import CameraInfo
+from .image_rendering_dataset import ImageRenderingDataset
 
 
 class SevenScenesDatasetFactory(object):
     @staticmethod
-    def make_dataset(dataset_path, scene, sequence, frame_indices):
-        sequence_directory = os.path.join(dataset_path, scene, sequence)
+    def make_dataset(dataset_path, scene_name, sequence, frame_indices):
+        sequence_directory = os.path.join(dataset_path, scene_name, sequence)
         positions = [np.loadtxt(os.path.join(sequence_directory, 'frame-{:06d}.pose.txt'.format(i))
                                 ) for i in frame_indices]
         color_image_paths = [os.path.join(sequence_directory, 'frame-{:06d}.color.png'.format(i)

@@ -1,5 +1,5 @@
-from torch.utils import data
 import numpy as np
+from torch.utils import data
 
 
 class ImageRenderingDataset(data.Dataset):

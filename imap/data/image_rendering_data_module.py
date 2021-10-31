@@ -1,8 +1,8 @@
 import pytorch_lightning as pl
 import torch
 from torch.utils import data
-from .seven_scenes_dataset_factory import SevenScenesDatasetFactory
 from .tum_dataset_factory import TUMDatasetFactory
+from .seven_scenes_dataset_factory import SevenScenesDatasetFactory
 
 
 class ImageRenderingDataModule(pl.LightningDataModule):

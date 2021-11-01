@@ -1,12 +1,8 @@
 import numpy as np
 
-DEFAULT_CAMERA_MATRIX = np.array([[525., 0, 320],
-                                 [0, 525., 240],
-                                 [0, 0, 1.]], dtype=np.float32)
-
 
 class CameraInfo(object):
-    def __init__(self, clip_depth_distance_threshold, camera_matrix=DEFAULT_CAMERA_MATRIX):
+    def __init__(self, clip_depth_distance_threshold, camera_matrix):
 
         self._inverted_camera_matrix = np.linalg.inv(camera_matrix)
         self._clip_depth_distance_threshold = clip_depth_distance_threshold

@@ -12,28 +12,34 @@ class IMAPMapBuilder(object):
         self._current_frame = None
         self._keep_current_frame = True
 
-    def init(self, frame):
-        self._current_frame = frame
+    def set_current_frame(self, current_frame):
+        self._current_frame = current_frame
 
     def step(self):
         active_keyframes = self._active_sampler.sample_keyframes(self._keyframes, self._model)
         active_keyframes = active_keyframes + [self._current_frame]
         self._map_builder_data_loader.update_frames([x.frame for x in active_keyframes])
-        self._update_model_positions(active_keyframes)
+        self._set_model_positions_from_keyframe(active_keyframes)
         self._trainer.fit(self._model, self._map_builder_data_loader)
-        self._update_keyframe_positions(active_keyframes)
+        self._set_keyframe_positions_from_model(active_keyframes)
         self._keep_current_frame = self._keyframe_validator.validate_keyframe(self._current_frame, self._model)
+        self._update_keyframes()
 
-    def add_current_frame(self, current_frame):
-        if len(self._keyframes) < 2 and self._keep_current_frame and self._current_frame is not None:
-            self._keyframes.append(self._current_frame)
-        self._current_frame = current_frame
-
-    def _update_model_positions(self, keyframes):
+    def _set_model_positions_from_keyframe(self, keyframes):
         positions = np.array([x.position for x in keyframes])
         self._model.set_positions(positions)
+        self._model.unfreeze_positions()
 
-    def _update_keyframe_positions(self, keyframes):
+    def _set_keyframe_positions_from_model(self, keyframes):
         positions = self._model.get_positions()
         for frame, position in zip(keyframes, positions):
-            frame.positions = position
+            frame.position = position
+
+    def _update_keyframes(self):
+        if self._current_frame is None:
+            return
+        if self._current_frame in self._keyframes:
+            return
+        if len(self._keyframes) > 1 and not self._keep_current_frame:
+            return
+        self._keyframes.append(self._current_frame)

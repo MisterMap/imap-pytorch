@@ -176,7 +176,7 @@ class NERF(BaseLightningModule):
         self._positions = nn.Parameter(position, requires_grad=positions_requires_grad)
 
     def get_positions(self):
-        return matrix_from_9d_position(self._positions).detach().cpu().numpy()
+        return matrix_from_9d_position(self._positions.data).detach().cpu().numpy()
 
     def freeze_positions(self):
         self._positions.requires_grad = False

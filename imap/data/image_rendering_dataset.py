@@ -4,12 +4,16 @@ from torch.utils import data
 
 class ImageRenderingDataset(data.Dataset):
     def __init__(self, color_images, depth_images, positions, camera_info):
-        print(color_images.shape)
+        assert color_images.shape[:3] == depth_images.shape
+        assert positions.shape == (color_images.shape[0], 4, 4)
+        print(f"Read {color_images.shape} images array")
+
         self._camera_info = camera_info
         camera_info.update_color_normalization_parameters(color_images)
         self._color_images = camera_info.process_color_image(color_images)
         self._depth_images = camera_info.process_depth_image(depth_images)
         self._positions = positions
+        print(f"Dataset size: {len(self)} pixels")
 
     def __len__(self):
         color_image_shape = self._color_images.shape

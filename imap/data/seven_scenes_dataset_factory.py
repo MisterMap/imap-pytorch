@@ -25,6 +25,6 @@ class SevenScenesDatasetFactory(object):
 
         positions = np.array(positions, dtype=np.float32)
         color_images = np.array([cv2.imread(x).astype(np.float32) for x in color_image_paths])
-        depth_images = np.array([cv2.imread(x, -1).astype(np.float32) / 1000 for x in depth_image_paths])
+        depth_images = np.array([cv2.imread(x, cv2.IMREAD_UNCHANGED).astype(np.float32) / 1000 for x in depth_image_paths])
         camera_info = CameraInfo(clip_depth_distance_threshold=4., camera_matrix=camera_matrix)
         return ImageRenderingDataset(color_images, depth_images, positions, camera_info)

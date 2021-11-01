@@ -5,6 +5,7 @@ from pytorch_lightning.utilities.parsing import AttributeDict
 
 from imap.data.camera_info import CameraInfo
 from imap.data.seven_scenes_frame_loader import SevenScenesFrameLoader
+from imap.data.seven_scenes_dataset_factory import DEFAULT_CAMERA_MATRIX
 from imap.model.nerf import NERF
 from imap.slam.active_sampler import ActiveSampler
 from imap.slam.imap_data_loader import IMAPDataLoader
@@ -30,7 +31,7 @@ class TestSampler(unittest.TestCase):
             optimize_positions=False,
         )
         factory = UniversalFactory([NERF])
-        camera_info = CameraInfo(4.)
+        camera_info = CameraInfo(4., camera_matrix=DEFAULT_CAMERA_MATRIX)
         self._model = factory.make_from_parameters(parameters, camera_info=camera_info)
         data_loader = IMAPDataLoader(2, 10, camera_info)
         initial_position = np.eye(4)

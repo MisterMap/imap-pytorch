@@ -12,17 +12,20 @@ from imap.utils import UniversalFactory
 # noinspection PyTypeChecker,PyUnresolvedReferences
 class TestNERF(unittest.TestCase):
     def setUp(self) -> None:
-        scene = "fire"
-        sequence = "seq-01"
-        dataset_path = "/media/mikhail/Data3T/7scenes"
-        frame_indices = [1, 2]
-        self._data_module = ImageRenderingDataModule(dataset_path, scene, sequence, frame_indices)
+        dataset_name = '7scenes'
+        dataset_params = {
+            'dataset_path': "../test_datasets/7scenes",
+            'scene_name': 'fire',
+            'sequence': "seq-01",
+            'frame_indices': [1, 109]
+        }
+        self._data_module = ImageRenderingDataModule(dataset_name, **dataset_params)
         parameters = AttributeDict(
             name="NERF",
             optimizer=AttributeDict(),
             encoding_dimension=93,
-            course_sample_bins=32,
-            fine_sample_bins=12,
+            course_sample_bins=5,
+            fine_sample_bins=5,
             maximal_distance=4,
             depth_loss_koef=0.5,
             encoding_sigma=25,

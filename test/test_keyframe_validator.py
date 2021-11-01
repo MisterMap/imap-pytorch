@@ -5,6 +5,7 @@ from pytorch_lightning.utilities.parsing import AttributeDict
 
 from imap.data.camera_info import CameraInfo
 from imap.data.seven_scenes_frame_loader import SevenScenesFrameLoader
+from imap.data.seven_scenes_dataset_factory import DEFAULT_CAMERA_MATRIX
 from imap.model.nerf import NERF
 from imap.slam.imap_data_loader import IMAPDataLoader
 from imap.slam.keyframe_validator import KeyframeValidator
@@ -17,7 +18,7 @@ class TestKeyframeValidator(unittest.TestCase):
     def setUp(self) -> None:
         scene = "fire"
         sequence = "seq-01"
-        dataset_path = "/media/mikhail/Data3T/7scenes"
+        dataset_path = "../test_datasets/7scenes"
         parameters = AttributeDict(
             name="NERF",
             optimizer=AttributeDict(),
@@ -30,11 +31,11 @@ class TestKeyframeValidator(unittest.TestCase):
             optimize_positions=False,
         )
         factory = UniversalFactory([NERF])
-        camera_info = CameraInfo(4.)
+        camera_info = CameraInfo(4., camera_matrix=DEFAULT_CAMERA_MATRIX)
         self._model = factory.make_from_parameters(parameters, camera_info=camera_info)
         data_loader = IMAPDataLoader(2, 10, camera_info)
         initial_position = np.eye(4)
-        self._frame = PosedFrame(SevenScenesFrameLoader(dataset_path, scene, sequence, [0])[0], initial_position)
+        self._frame = PosedFrame(SevenScenesFrameLoader(dataset_path, scene, sequence, [109])[0], initial_position)
         self._keyframe_validator = KeyframeValidator(0.1, 0.9, data_loader)
 
     def test_sample_keyframes(self):

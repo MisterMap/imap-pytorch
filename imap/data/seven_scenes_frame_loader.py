@@ -1,5 +1,5 @@
 import os
-
+from pathlib import Path
 import cv2
 import numpy as np
 
@@ -8,7 +8,7 @@ from ..slam.frame import Frame
 
 class SevenScenesFrameLoader(object):
     def __init__(self, dataset_path, scene, sequence, frame_indices):
-        sequence_directory = os.path.join(dataset_path, scene, sequence)
+        sequence_directory = Path(dataset_path) / scene / sequence
         positions = [np.loadtxt(os.path.join(sequence_directory, 'frame-{:06d}.pose.txt'.format(i))
                                 ) for i in frame_indices]
         color_image_paths = [os.path.join(sequence_directory, 'frame-{:06d}.color.png'.format(i)

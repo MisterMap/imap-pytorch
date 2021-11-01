@@ -24,9 +24,7 @@ mlruns
 *.mp4
 
 # Images
-*.jpg
 *.bmp
-*.png
 *.svg
 *.depth
 *.reg
@@ -43,7 +41,6 @@ mlruns
 *.rar
 *.gz
 *.npz
-*.txt
 *.db
 
 # Python models

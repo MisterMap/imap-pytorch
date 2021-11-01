@@ -36,7 +36,7 @@ class IMAPDataLoader(object):
             "pixel": np.array([x, y], dtype=np.float32).T,
             "color": self._color_images[frame_index][y, x],
             "depth": self._depth_images[frame_index][y, x],
-            "frame_index": (np.ones(len(x)) * frame_index).astype(np.long)
+            "frame_index": (np.ones(len(x)) * frame_index).astype(np.int64)
         }
 
     def sample_pixels(self, image_shape):

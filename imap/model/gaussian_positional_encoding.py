@@ -9,7 +9,7 @@ class GaussianPositionalEncoding(nn.Module):
         if not use_only_sin:
             encoding_dimension = encoding_dimension // 2
         self._b_encoding_matrix = nn.Linear(3, encoding_dimension, bias=False)
-        self._b_encoding_matrix.weight = nn.Parameter(torch.randn((encoding_dimension, 3)) * sigma, requires_grad=True)
+        nn.init.normal_(self._b_encoding_matrix.weight, 0, sigma)
 
     def forward(self, x):
         encodings = self._b_encoding_matrix(x)

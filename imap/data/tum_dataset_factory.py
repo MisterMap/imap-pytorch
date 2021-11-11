@@ -6,14 +6,15 @@ from scipy.spatial.transform import Rotation as R
 from .image_rendering_dataset import ImageRenderingDataset
 from .camera_info import CameraInfo
 
-DEFAULT_CAMERA_MATRIX = np.array([[517.3, 0, 318.6],
-                                 [0, 516.5, 255.3],
+DEFAULT_CAMERA_MATRIX = np.array([[525.0, 0, 319.5],
+                                 [0, 525.0, 239.5],
                                  [0, 0, 1.]], dtype=np.float32)
 
 
 class TUMDatasetFactory(object):
     @staticmethod
-    def make_dataset(dataset_path, scene_name, association_file_name, frame_indices, camera_matrix=DEFAULT_CAMERA_MATRIX):
+    def make_dataset(dataset_path, scene_name, association_file_name, frame_indices,
+                     camera_matrix=DEFAULT_CAMERA_MATRIX, distance_koef=1., clip_distance_threshold=4.):
         sequence_directory = Path(dataset_path) / scene_name
         association_file = sequence_directory / association_file_name
         print(f"Reading {association_file}")
@@ -27,7 +28,8 @@ class TUMDatasetFactory(object):
         positions = np.array(positions, dtype=np.float32)
         color_images = np.array([cv2.imread(x).astype(np.float32) for x in color_image_paths])
         depth_images = np.array([cv2.imread(x, cv2.IMREAD_UNCHANGED).astype(np.float32) / 5000 for x in depth_image_paths])
-        camera_info = CameraInfo(clip_depth_distance_threshold=4., camera_matrix=camera_matrix)
+        camera_info = CameraInfo(clip_depth_distance_threshold=clip_distance_threshold, camera_matrix=camera_matrix,
+                                 distance_koef=distance_koef)
         return ImageRenderingDataset(color_images, depth_images, positions, camera_info)
 
     @staticmethod

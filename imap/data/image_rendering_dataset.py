@@ -12,7 +12,7 @@ class ImageRenderingDataset(data.Dataset):
         camera_info.update_color_normalization_parameters(color_images)
         self._color_images = camera_info.process_color_image(color_images)
         self._depth_images = camera_info.process_depth_image(depth_images)
-        self._positions = positions
+        self._positions = camera_info.process_positions(positions)
         print(f"Dataset size: {len(self)} pixels")
 
     def __len__(self):

@@ -9,7 +9,7 @@ class ImageRenderingDataset(data.Dataset):
         print(f"Read {color_images.shape} images array")
 
         self._camera_info = camera_info
-        camera_info.update_color_normalization_parameters(color_images)
+        # camera_info.update_color_normalization_parameters(color_images)
         self._color_images = camera_info.process_color_image(color_images)
         self._depth_images = camera_info.process_depth_image(depth_images)
         self._positions = camera_info.process_positions(positions)

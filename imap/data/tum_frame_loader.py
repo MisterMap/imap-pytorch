@@ -12,6 +12,7 @@ class TUMFrameLoader(object):
     def __init__(self, dataset_path, scene_name, association_file_name, frame_indices):
         sequence_directory = Path(dataset_path) / scene_name
         association_file = sequence_directory / association_file_name
+
         print(f"Reading {association_file}")
 
         associations = pd.read_csv(association_file, names=[i for i in range(12)], sep=' ')

@@ -59,7 +59,7 @@ class NERF(BaseLightningModule):
         encodings = self._positional_encoding(back_projected_points)
         prediction = mlp_model(encodings)
 
-        colors = prediction[:, :3].reshape(bins_count, -1, 3)
+        colors = torch.sigmoid(prediction[:, :3]).reshape(bins_count, -1, 3)
         density = prediction[:, 3].reshape(bins_count, -1)
         depths = sampled_depths.reshape(bins_count, -1)
         weights = self.calculate_weights(density, depths)
@@ -149,9 +149,11 @@ class NERF(BaseLightningModule):
         fine_image_loss = torch.mean(self._loss(output[2], batch["color"]), dim=1)
         fine_depth_weights = 1. / (torch.sqrt(output[5]) + 1e-10) * mask
         fine_depth_loss = self._loss(output[3] * fine_depth_weights, batch["depth"] * fine_depth_weights)
-        image_loss = course_image_loss + fine_image_loss
-        depth_loss = course_depth_loss + fine_depth_loss
-        loss = image_loss + self.hparams.depth_loss_koef * depth_loss
+        # image_loss = course_image_loss + fine_image_loss
+        # depth_loss = course_depth_loss + fine_depth_loss
+        image_loss = fine_image_loss
+        depth_loss = fine_depth_loss
+        loss = self.hparams.color_loss_koef * image_loss + self.hparams.depth_loss_koef * depth_loss
         if reduction:
             course_depth_loss = torch.mean(course_depth_loss)
             course_image_loss = torch.mean(course_image_loss)

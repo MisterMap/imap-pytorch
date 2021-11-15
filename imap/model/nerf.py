@@ -73,20 +73,22 @@ class NERF(BaseLightningModule):
 
     def stratified_sample_depths(self, batch_size, device, bins_count, deterministic=False):
         if deterministic:
-            uniform = torch.ones((bins_count, batch_size), device=device) * 0.5
-        else:
-            uniform = torch.rand((bins_count, batch_size), device=device)
-        result = (torch.arange(bins_count, device=device)[:, None] + uniform) * self._default_depth / bins_count
+            depth_delta = (self._default_depth.item() - self.hparams.minimal_depth) / bins_count
+            result = torch.arange(self.hparams.minimal_depth, self._default_depth.item(), depth_delta, device=device)
+            result = torch.repeat_interleave(result[:, None], batch_size, dim=1)
+            return result
+        uniform = torch.rand((bins_count, batch_size), device=device)
+        uniform[0] = 1
+        result = (torch.arange(bins_count, device=device)[:, None] + uniform - 1
+                  ) * (self._default_depth - self.hparams.minimal_depth) / (bins_count - 1) + self.hparams.minimal_depth
         return result
 
-    @staticmethod
-    def hierarchical_sample_depths(weights, batch_size, device, bins_count, bins, deterministic=False):
+    def hierarchical_sample_depths(self, weights, batch_size, device, bins_count, bins, deterministic=False):
         weights = weights.transpose(1, 0)[:, :-1] + 1e-10
         pdf = weights / torch.sum(weights, dim=1)[:, None]
         cdf = torch.cumsum(pdf, dim=1)
         cdf = torch.cat([torch.zeros_like(cdf[:, :1]), cdf], 1)
         bins = bins.transpose(1, 0)
-        bins = torch.cat([torch.zeros_like(bins[:, :1]), bins], 1)
 
         if deterministic:
             uniform = torch.arange(bins_count, device=device) / bins_count + 1. / 2 / bins_count
@@ -94,15 +96,22 @@ class NERF(BaseLightningModule):
         else:
             uniform = torch.rand((batch_size, bins_count), device=device).contiguous()
         indexes = torch.searchsorted(cdf, uniform, right=True)
-        index_below = torch.max(torch.zeros_like(indexes), indexes - 1)
-        index_above = torch.min((cdf.shape[1] - 1) * torch.ones_like(indexes), indexes)
+        index_below = self.clip_indexes(indexes - 1, 0, bins.shape[1] - 1)
+        index_above = self.clip_indexes(indexes, 0, bins.shape[1] - 1)
 
         denominator = torch.gather(cdf, 1, index_above) - torch.gather(cdf, 1, index_below)
-        denominator = torch.where(denominator < 1e-10, torch.ones_like(denominator) * 1e-10, denominator)
+        denominator = torch.where(denominator < 1e-10, torch.ones_like(denominator), denominator)
         t = (uniform - torch.gather(cdf, 1, index_below)) / denominator
-        hierarchical_sample = torch.gather(bins, 1, index_below) + t * (
-                torch.gather(bins, 1, index_above) - torch.gather(bins, 1, index_below))
+        bins_below = torch.gather(bins, 1, index_below)
+        bins_above = torch.gather(bins, 1, index_above)
+        hierarchical_sample = bins_below + t * (bins_above - bins_below)
         return hierarchical_sample.transpose(1, 0)
+
+    @staticmethod
+    def clip_indexes(indexes, minimal, maximal):
+        result = torch.max(minimal * torch.ones_like(indexes), indexes)
+        result = torch.min(maximal * torch.ones_like(indexes), result)
+        return result
 
     @staticmethod
     def repeat_tensor(tensor, bins_count):
@@ -110,16 +119,16 @@ class NERF(BaseLightningModule):
         result = result.reshape(-1, *tensor.shape[1:])
         return result
 
-    @staticmethod
-    def calculate_weights(densities, depths):
+    def calculate_weights(self, densities, depths):
         weights = []
-        previous_depth = 0
         product = 1
         densities = torch.logsumexp(torch.cat([torch.zeros_like(densities)[None], densities[None]], dim=0), dim=0)
-        for density, depth in zip(densities, depths):
-            depth_delta = depth - previous_depth
-            previous_depth = depth
-            hit_probability = 1 - torch.exp(-density * depth_delta)
+        for i in range(len(depths)):
+            if i < len(depths) - 1:
+                depth_delta = depths[i + 1] - depths[i]
+            else:
+                depth_delta = self._default_depth - depths[i]
+            hit_probability = 1 - torch.exp(-densities[i] * depth_delta)
             weights.append(hit_probability * product)
             product = product * (1 - hit_probability)
         weights.append(product)

@@ -27,8 +27,10 @@ class TestKeyframeValidator(unittest.TestCase):
             fine_sample_bins=12,
             maximal_distance=4,
             depth_loss_koef=0.5,
+            color_loss_koef=1,
             encoding_sigma=25,
             optimize_positions=False,
+            minimal_depth=0.001,
         )
         factory = UniversalFactory([NERF])
         camera_info = CameraInfo(4., camera_matrix=DEFAULT_CAMERA_MATRIX)

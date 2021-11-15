@@ -24,7 +24,8 @@ class CameraInfo(object):
         homogeneous_pixel = np.array([x, y, np.ones(y.shape[0])])
         homogeneous_keypoints = self._inverted_camera_matrix @ homogeneous_pixel
         koefs = np.linalg.norm(homogeneous_keypoints.T, axis=1).reshape(depth_image.shape[1], depth_image.shape[2])
-        return depth_image * koefs[None, :, :] * self._distance_koef
+        result = (depth_image * koefs[None, :, :] * self._distance_koef).astype(np.float32)
+        return result
 
     def process_color_image(self, color_image):
         return (color_image - self._color_mean) / self._color_std

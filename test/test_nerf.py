@@ -28,8 +28,10 @@ class TestNERF(unittest.TestCase):
             fine_sample_bins=5,
             maximal_distance=4,
             depth_loss_koef=0.5,
+            color_loss_koef=1,
             encoding_sigma=25,
             optimize_positions=False,
+            minimal_depth=0.001,
         )
         self._trainer = pl.Trainer(logger=TensorBoardLogger("lightning_logs"), max_epochs=1, gpus=1,
                                    limit_train_batches=1, limit_val_batches=1, limit_test_batches=1)

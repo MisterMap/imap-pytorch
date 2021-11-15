@@ -88,6 +88,9 @@ class NERF(BaseLightningModule):
         pdf = weights / torch.sum(weights, dim=1)[:, None]
         cdf = torch.cumsum(pdf, dim=1)
         cdf = torch.cat([torch.zeros_like(cdf[:, :1]), cdf], 1)
+        minimal_bin = bins[0]
+        bins = (torch.roll(bins, 1) + bins) / 2
+        bins[0] = minimal_bin
         bins = bins.transpose(1, 0)
 
         if deterministic:

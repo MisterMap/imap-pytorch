@@ -2,23 +2,18 @@ import numpy as np
 
 
 class KeyframeValidator(object):
-    def __init__(self, td, tp, data_loader):
-        self._data_loader = data_loader
+    def __init__(self, td, tp):
         self._td = td
         self._tp = tp
 
-    def validate_keyframe(self, keyframe, model):
-        self._data_loader.update_frames([keyframe.frame])
-        model.eval()
-        model.set_positions(np.array([keyframe.position]))
-        depth = np.zeros(0)
-        depth_variance = np.zeros(0)
-        ground_truth_depth = np.zeros(0)
-        for batch in self._data_loader:
-            output, losses = model.loss(batch)
-            depth = np.concatenate([depth, output[3].cpu().detach().numpy()])
-            depth_variance = np.concatenate([depth_variance, output[5].cpu().detach().numpy()])
-            ground_truth_depth = np.concatenate([ground_truth_depth, batch["depth"].cpu().detach().numpy()])
-        koefs = np.abs(depth - ground_truth_depth) / depth_variance
+    def validate_keyframe(self, output, batch, index):
+        mask = (batch["frame_index"] == index).cpu().detach().numpy()
+        mask &= batch["depth"].cpu().detach().numpy() > 0
+        depth = output[3].cpu().detach().numpy()[mask]
+        depth_variance = output[5].cpu().detach().numpy()[mask]
+        ground_truth_depth = batch["depth"].cpu().detach().numpy()[mask]
+        koefs = np.abs(depth - ground_truth_depth) / (np.sqrt(depth_variance) + 1e-10)
         criterion = np.mean(np.where(koefs < self._td, 1, 0))
+        print(f"Keyframe validator criterion = {criterion}")
+        print(f"Keyframe is validated = {criterion < self._tp}")
         return criterion < self._tp

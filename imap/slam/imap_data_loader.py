@@ -3,13 +3,14 @@ import torch
 
 
 class IMAPDataLoader(object):
-    def __init__(self, batch_count, points_per_image, camera_info):
+    def __init__(self, batch_count, points_per_image, camera_info, device="cuda"):
         self._batch_count = batch_count
         self._points_per_image = points_per_image
         self._depth_images = []
         self._color_images = []
         self._camera_info = camera_info
         self._index = 0
+        self._device = device
 
     def __len__(self):
         return self._batch_count
@@ -51,9 +52,8 @@ class IMAPDataLoader(object):
             batch = {x: np.concatenate([batch[x], part[x]]) for x in batch.keys()}
         return batch
 
-    @staticmethod
-    def _make_tensor(batch):
-        return {x: torch.tensor(batch[x]) for x in batch.keys()}
+    def _make_tensor(self, batch):
+        return {x: torch.tensor(batch[x], device=self._device) for x in batch.keys()}
 
     def update_frames(self, frames):
         self._color_images = self._camera_info.process_color_image(np.array([x.image for x in frames]))

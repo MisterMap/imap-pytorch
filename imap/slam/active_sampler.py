@@ -10,7 +10,8 @@ class ActiveSampler(object):
     def sample_keyframes(self, keyframes, model):
         if len(keyframes) <= self._keep_keyframe_count + self._active_keyframe_count:
             return keyframes
-        weights = self._get_sample_weights(keyframes[:-self._keep_keyframe_count], model)
+        # weights = self._get_sample_weights(keyframes[:-self._keep_keyframe_count], model)
+        weights = np.ones(len(keyframes) - self._keep_keyframe_count)
         active_keyframes = self._sample(keyframes[:-self._keep_keyframe_count], weights)
         return active_keyframes + keyframes[-self._keep_keyframe_count:]
 

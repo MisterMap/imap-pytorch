@@ -17,7 +17,7 @@ class NERF(BaseLightningModule):
         self._default_color = torch.tensor(camera_info.get_default_color())
         self._default_depth = torch.tensor(camera_info.get_default_depth())
         self._loss = nn.L1Loss(reduction="none")
-        self._positions = nn.Parameter(torch.zeros(0, 4, 4), requires_grad=parameters.optimize_positions)
+        self._positions = None
 
     def forward(self, pixel, camera_position):
         with torch.no_grad():
@@ -188,20 +188,4 @@ class NERF(BaseLightningModule):
         return matrix_from_9d_position(self._positions[indexes])
 
     def set_positions(self, position):
-        device = self._positions.data.device
-        positions_requires_grad = self._positions.requires_grad
-        position = position_9d_from_matrix(torch.tensor(position, device=device))
-        self._positions = nn.Parameter(position, requires_grad=positions_requires_grad)
-
-    def get_positions(self):
-        return matrix_from_9d_position(self._positions.data).detach().cpu().numpy()
-
-    def freeze_positions(self):
-        self._positions.requires_grad = False
-
-    def unfreeze_positions(self):
-        self._positions.requires_grad = True
-
-    def freeze_model(self):
-        self._mlp.requires_grad_(False)
-        self._positional_encoding.requires_grad_(False)
+        self._positions = position

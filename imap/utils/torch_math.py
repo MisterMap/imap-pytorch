@@ -22,7 +22,7 @@ def matrix_from_9d_position(position):
 
 
 def rotation_matrix_from_6d_parametrization(parametrization):
-    x = torch.nn.functional.normalize(parametrization[:, :3])
+    x = torch.nn.functional.normalize(parametrization[:, :3], dim=1)
     z = torch.nn.functional.normalize(torch.cross(parametrization[:, :3], parametrization[:, 3:], dim=1), dim=1)
     y = torch.cross(z, x, dim=1)
     matrix = torch.zeros(parametrization.shape[0], 3, 3, device=parametrization.device)

@@ -1,20 +1,18 @@
 import unittest
 
 import numpy as np
-import pytorch_lightning as pl
 from pytorch_lightning.utilities.parsing import AttributeDict
 
 from imap.data.camera_info import CameraInfo
-from imap.data.seven_scenes_frame_loader import SevenScenesFrameLoader
 from imap.data.seven_scenes_dataset_factory import DEFAULT_CAMERA_MATRIX
+from imap.data.seven_scenes_frame_loader import SevenScenesFrameLoader
 from imap.model.nerf import NERF
 from imap.slam.active_sampler import ActiveSampler
 from imap.slam.imap_data_loader import IMAPDataLoader
 from imap.slam.imap_map_builder import IMAPMapBuilder
 from imap.slam.keyframe_validator import KeyframeValidator
-from imap.slam.posed_frame import PosedFrame
-from imap.utils import UniversalFactory
 from imap.slam.optimized_frame import OptimizedFrame
+from imap.utils import UniversalFactory
 
 
 class TestIMAPMapBuilder(unittest.TestCase):
@@ -39,7 +37,7 @@ class TestIMAPMapBuilder(unittest.TestCase):
         camera_info = CameraInfo(4., camera_matrix=DEFAULT_CAMERA_MATRIX)
         self._model = factory.make_from_parameters(parameters, camera_info=camera_info)
 
-        data_loader = IMAPDataLoader(3, 10, camera_info)
+        data_loader = IMAPDataLoader(20, 200, camera_info)
 
         sampler_data_loader = IMAPDataLoader(2, 10, camera_info)
         sampler = ActiveSampler(sampler_data_loader, 3, 1)
@@ -56,4 +54,3 @@ class TestIMAPMapBuilder(unittest.TestCase):
         self._builder.step()
         self._builder.set_current_frame(self._frames[2])
         self._builder.step()
-

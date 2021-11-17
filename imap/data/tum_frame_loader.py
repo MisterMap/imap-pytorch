@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 import pandas as pd
 
-from .tum_dataset_factory import TUMDatasetFactory, DEFAULT_CAMERA_MATRIX
+from .tum_dataset_factory import TUMDatasetFactory
 from ..slam.frame import Frame
 
 

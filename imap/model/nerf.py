@@ -4,7 +4,7 @@ import torch.nn as nn
 from .base_lightning_model import BaseLightningModule
 from .gaussian_positional_encoding import GaussianPositionalEncoding
 from .mlp import MLP
-from ..utils.torch_math import back_project_pixel, matrix_from_9d_position, position_9d_from_matrix
+from ..utils.torch_math import back_project_pixel, matrix_from_9d_position
 
 
 class NERF(BaseLightningModule):

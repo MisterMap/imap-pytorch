@@ -1,4 +1,3 @@
-import numpy as np
 import torch
 
 from .imap_trainer import IMAPTrainer

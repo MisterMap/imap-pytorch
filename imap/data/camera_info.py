@@ -3,7 +3,6 @@ import numpy as np
 
 class CameraInfo(object):
     def __init__(self, clip_depth_distance_threshold, camera_matrix, distance_koef=1.):
-
         self._inverted_camera_matrix = np.linalg.inv(camera_matrix)
         self._clip_depth_distance_threshold = clip_depth_distance_threshold * distance_koef
         self._color_mean = np.zeros(3, dtype=np.float32)

@@ -5,8 +5,8 @@ import torch
 from pytorch_lightning.utilities.parsing import AttributeDict
 
 from imap.data.camera_info import CameraInfo
-from imap.data.seven_scenes_frame_loader import SevenScenesFrameLoader
 from imap.data.seven_scenes_dataset_factory import DEFAULT_CAMERA_MATRIX
+from imap.data.seven_scenes_frame_loader import SevenScenesFrameLoader
 from imap.model.nerf import NERF
 from imap.slam.imap_data_loader import IMAPDataLoader
 from imap.slam.keyframe_validator import KeyframeValidator

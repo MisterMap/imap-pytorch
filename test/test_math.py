@@ -1,11 +1,9 @@
 import unittest
 
-import numpy as np
-from scipy.spatial.transform import Rotation
+import torch
 
 from imap.utils.math import *
 from imap.utils.torch_math import *
-import torch
 
 
 class TestMath(unittest.TestCase):

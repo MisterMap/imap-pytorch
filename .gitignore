@@ -18,6 +18,7 @@ logs
 lightning_logs*
 tmp
 mlruns
+runs/
 
 # Audio and video
 *.avi
@@ -49,3 +50,4 @@ mlruns
 *.pt
 *.pth
 *.ckpt
+

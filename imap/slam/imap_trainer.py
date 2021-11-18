@@ -12,7 +12,8 @@ class IMAPTrainer(object):
         output = None
         losses = None
         batch = None
-        self._data_loader.update_frames([x.frame for x in optimized_frames])
+        self._data_loader.update_frames([x.frame for x in optimized_frames],
+                                        [x.region_weights for x in optimized_frames])
         print("Start training")
         for batch in self._data_loader:
             self._model.set_positions(torch.stack([x.position for x in optimized_frames]))

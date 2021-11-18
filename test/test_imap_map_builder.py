@@ -37,14 +37,14 @@ class TestIMAPMapBuilder(unittest.TestCase):
         camera_info = CameraInfo(4., camera_matrix=DEFAULT_CAMERA_MATRIX)
         self._model = factory.make_from_parameters(parameters, camera_info=camera_info)
 
-        data_loader = IMAPDataLoader(20, 200, camera_info)
+        data_loader = IMAPDataLoader(20, 200, camera_info, device="cpu")
 
         sampler_data_loader = IMAPDataLoader(2, 10, camera_info)
         sampler = ActiveSampler(sampler_data_loader, 3, 1)
         keyframe_validator = KeyframeValidator(0.1, 0.9)
-        self._builder = IMAPMapBuilder(self._model, data_loader, sampler, keyframe_validator)
+        self._builder = IMAPMapBuilder(self._model, data_loader, sampler, keyframe_validator, device="cpu")
         initial_position = np.eye(4)[:3, :]
-        self._frames = [OptimizedFrame(x, initial_position) for x in SevenScenesFrameLoader(
+        self._frames = [OptimizedFrame(x, initial_position, device="cpu") for x in SevenScenesFrameLoader(
             dataset_path, scene, sequence, [1, 81, 109, 266, 303, 406])]
 
     def test_builder(self):
